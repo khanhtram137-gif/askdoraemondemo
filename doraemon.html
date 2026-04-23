@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>도라에몽에게 물어봐</title>
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Round+Square:wght@400;700;800&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue: #1A8FE3;
+    --blue-light: #5BB3F0;
+    --blue-pale: #E8F4FD;
+    --blue-deep: #0C5FA0;
+    --white: #FFFFFF;
+    --cream: #FAFBFF;
+    --gray-50: #F5F7FA;
+    --gray-100: #E8ECF2;
+    --gray-300: #B0BACC;
+    --gray-500: #6B7A94;
+    --gray-700: #3D4A5C;
+    --gray-900: #1A2336;
+    --red: #E8322A;
+    --yellow: #F5C518;
+    --green: #2DB87A;
+    --shadow-sm: 0 2px 8px rgba(26,143,227,0.10);
+    --shadow-md: 0 8px 32px rgba(26,143,227,0.15);
+    --shadow-lg: 0 20px 60px rgba(26,143,227,0.20);
+    --radius-sm: 12px;
+    --radius-md: 20px;
+    --radius-lg: 32px;
+    --radius-xl: 48px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: var(--cream);
+    min-height: 100vh;
+    overflow-x: hidden;
+    color: var(--gray-900);
+  }
+
+  /* ── BACKGROUND BUBBLES ── */
+  .bg-decor {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .bubble {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.07;
+    background: var(--blue);
+  }
+  .bubble-1 { width: 400px; height: 400px; top: -100px; right: -80px; }
+  .bubble-2 { width: 200px; height: 200px; bottom: 100px; left: -60px; }
+  .bubble-3 { width: 120px; height: 120px; top: 40%; right: 10%; }
+
+  /* ── SCREENS ── */
+  .screen {
+    display: none;
+    min-height: 100vh;
+    position: relative;
+    z-index: 1;
+  }
+  .screen.active {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: fadeUp 0.4s ease forwards;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── CONTAINER ── */
+  .container {
+    width: 100%;
+    max-width: 480px;
+    padding: 0 20px 40px;
+  }
+
+  /* ── HEADER ── */
+  .top-nav {
+    width: 100%;
+    max-width: 480px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .nav-logo {
+    font-family: 'Nanum Round Square', sans-serif;
+    font-weight: 800;
+    font-size: 15px;
+    color: var(--blue);
+    letter-spacing: -0.3px;
+  }
+  .nav-link {
+    font-size: 13px;
+    color: var(--gray-500);
+    cursor: pointer;
+    padding: 6px 12px;
+    border-radius: 20px;
+    border: 1px solid var(--gray-100);
+    background: white;
+    transition: all 0.2s;
+  }
+  .nav-link:hover { background: var(--blue-pale); color: var(--blue); border-color: var(--blue-light); }
+
+  /* ── HERO ── */
+  .hero {
+    text-align: center;
+    padding: 24px 0 32px;
+  }
+
+  .doraemon-face {
+    width: 110px;
+    height: 110px;
+    margin: 0 auto 20px;
+    position: relative;
+  }
+  .doraemon-face svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 8px 24px rgba(26,143,227,0.30));
+    animation: float 3s ease-in-out infinite;
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-8px); }
+  }
+
+  .hero-title {
+    font-family: 'Nanum Round Square', sans-serif;
+    font-weight: 800;
+    font-size: 28px;
+    color: var(--gray-900);
+    letter-spacing: -0.5px;
+    margin-bottom: 10px;
+    line-height: 1.3;
+  }
+  .hero-title span { color: var(--blue); }
+  .hero-subtitle {
+    font-size: 14px;
+    color: var(--gray-500);
+    line-height: 1.7;
+  }
+
+  /* ── CARDS ── */
+  .card {
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid rgba(26,143,227,0.08);
+    margin-bottom: 16px;
+  }
+
+  .card-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--gray-500);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  /* ── TEXTAREA ── */
+  .input-area {
+    width: 100%;
+    min-height: 130px;
+    border: 1.5px solid var(--gray-100);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    font-size: 15px;
+    font-family: 'Noto Sans KR', sans-serif;
+    color: var(--gray-900);
+    line-height: 1.7;
+    resize: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background: var(--gray-50);
+    outline: none;
+  }
+  .input-area:focus {
+    border-color: var(--blue-light);
+    box-shadow: 0 0 0 4px rgba(26,143,227,0.08);
+    background: white;
+  }
+  .input-area::placeholder { color: var(--gray-300); }
+
+  /* ── BUTTONS ── */
+  .btn-primary {
+    width: 100%;
+    padding: 16px;
+    background: var(--blue);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 16px;
+    font-family: 'Nanum Round Square', sans-serif;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 16px rgba(26,143,227,0.35);
+    margin-top: 16px;
+    letter-spacing: -0.2px;
+  }
+  .btn-primary:hover {
+    background: var(--blue-deep);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(26,143,227,0.40);
+  }
+  .btn-primary:active { transform: translateY(0); }
+
+  .btn-ghost {
+    width: 100%;
+    padding: 14px;
+    background: transparent;
+    color: var(--gray-500);
+    border: 1.5px solid var(--gray-100);
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    font-family: 'Noto Sans KR', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 10px;
+  }
+  .btn-ghost:hover { border-color: var(--blue-light); color: var(--blue); background: var(--blue-pale); }
+
+  .btn-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--gray-500);
+    cursor: pointer;
+    padding: 8px 0;
+    background: none;
+    border: none;
+    font-family: 'Noto Sans KR', sans-serif;
+    transition: color 0.2s;
+    margin-bottom: 8px;
+  }
+  .btn-back:hover { color: var(--blue); }
+
+  /* ── COUNTER BADGE ── */
+  .counter-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: white;
+    border: 1px solid var(--gray-100);
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-size: 13px;
+    color: var(--gray-500);
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-sm);
+  }
+  .counter-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  /* ── LOADING ── */
+  #screenLoading .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 80vh;
+    text-align: center;
+  }
+  .loading-face {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 24px;
+    animation: spin-gentle 2s ease-in-out infinite;
+  }
+  @keyframes spin-gentle {
+    0%,100%{transform:rotate(-5deg)} 50%{transform:rotate(5deg)}
+  }
+  .loading-dots {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 16px;
+  }
+  .ld { width: 10px; height: 10px; border-radius: 50%; background: var(--blue-light); animation: bounce 1.2s infinite; }
+  .ld:nth-child(2){animation-delay:.2s}
+  .ld:nth-child(3){animation-delay:.4s}
+  @keyframes bounce{0%,80%,100%{transform:scale(0.6);opacity:0.4}40%{transform:scale(1);opacity:1}}
+  .loading-text { font-size: 15px; color: var(--gray-500); line-height: 1.7; }
+
+  /* ── GADGET RESULT CARD ── */
+  .gadget-hero {
+    background: linear-gradient(135deg, #E8F4FD 0%, #D0EAFB 100%);
+    border-radius: var(--radius-lg);
+    padding: 32px 24px;
+    text-align: center;
+    margin-bottom: 16px;
+    border: 1px solid rgba(26,143,227,0.12);
+    position: relative;
+    overflow: hidden;
+  }
+  .gadget-hero::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 160px; height: 160px;
+    border-radius: 50%;
+    background: rgba(26,143,227,0.06);
+  }
+  .gadget-emoji {
+    font-size: 56px;
+    margin-bottom: 12px;
+    display: block;
+    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.12));
+  }
+  .gadget-name {
+    font-family: 'Nanum Round Square', sans-serif;
+    font-weight: 800;
+    font-size: 24px;
+    color: var(--blue-deep);
+    margin-bottom: 8px;
+  }
+  .gadget-desc {
+    font-size: 14px;
+    color: var(--gray-500);
+    line-height: 1.7;
+  }
+  .gadget-tag {
+    display: inline-block;
+    background: var(--blue);
+    color: white;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-top: 12px;
+    letter-spacing: 0.3px;
+  }
+
+  .reason-block {
+    background: var(--gray-50);
+    border-radius: var(--radius-sm);
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+  .reason-label {
+    font-size: 11px;
+    color: var(--gray-300);
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .reason-text {
+    font-size: 14px;
+    color: var(--gray-700);
+    line-height: 1.7;
+  }
+
+  .quote-block {
+    border-left: 3px solid var(--blue-light);
+    padding: 14px 16px;
+    background: var(--blue-pale);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    margin-bottom: 16px;
+  }
+  .quote-text {
+    font-size: 14px;
+    color: var(--blue-deep);
+    line-height: 1.75;
+    font-style: italic;
+  }
+
+  /* ── DASHBOARD ── */
+  .insight-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: white;
+    border: 1px solid var(--gray-100);
+    border-radius: 20px;
+    padding: 10px 16px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-sm);
+  }
+  .insight-icon { font-size: 16px; }
+  .insight-text { font-size: 13px; color: var(--gray-500); }
+  .insight-num { font-weight: 700; color: var(--blue); }
+
+  .tabs {
+    display: flex;
+    background: white;
+    border-radius: var(--radius-md);
+    padding: 4px;
+    margin-bottom: 20px;
+    border: 1px solid var(--gray-100);
+    box-shadow: var(--shadow-sm);
+  }
+  .tab-btn {
+    flex: 1;
+    padding: 10px 8px;
+    border: none;
+    background: transparent;
+    font-size: 13px;
+    font-family: 'Noto Sans KR', sans-serif;
+    color: var(--gray-500);
+    cursor: pointer;
+    border-radius: 14px;
+    transition: all 0.2s;
+  }
+  .tab-btn.active {
+    background: var(--blue);
+    color: white;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(26,143,227,0.3);
+  }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; animation: fadeUp 0.3s ease; }
+
+  /* BAR CHART */
+  .section-title {
+    font-family: 'Nanum Round Square', sans-serif;
+    font-weight: 800;
+    font-size: 16px;
+    color: var(--gray-900);
+    margin-bottom: 16px;
+  }
+  .bar-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .bar-cat {
+    font-size: 13px;
+    color: var(--gray-700);
+    width: 60px;
+    flex-shrink: 0;
+  }
+  .bar-track {
+    flex: 1;
+    height: 10px;
+    background: var(--gray-100);
+    border-radius: 5px;
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%;
+    border-radius: 5px;
+    background: var(--blue);
+    transition: width 0.8s cubic-bezier(.4,0,.2,1);
+  }
+  .bar-pct {
+    font-size: 12px;
+    color: var(--gray-500);
+    width: 32px;
+    text-align: right;
+  }
+  .chart-insight {
+    margin-top: 16px;
+    padding: 12px 16px;
+    background: var(--blue-pale);
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    color: var(--blue-deep);
+    line-height: 1.6;
+  }
+
+  /* GADGET RANK */
+  .rank-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--gray-100);
+  }
+  .rank-item:last-child { border-bottom: none; }
+  .rank-num {
+    font-family: 'Nanum Round Square', sans-serif;
+    font-weight: 800;
+    font-size: 18px;
+    color: var(--gray-300);
+    width: 24px;
+  }
+  .rank-num.top { color: var(--yellow); }
+  .rank-emoji { font-size: 24px; }
+  .rank-info { flex: 1; }
+  .rank-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--gray-900);
+    margin-bottom: 4px;
+  }
+  .rank-bar-wrap { display: flex; align-items: center; gap: 8px; }
+  .rank-track {
+    flex: 1;
+    height: 6px;
+    background: var(--gray-100);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .rank-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    background: linear-gradient(90deg, var(--blue-light), var(--blue));
+    transition: width 0.8s cubic-bezier(.4,0,.2,1);
+  }
+  .rank-count { font-size: 12px; color: var(--gray-500); }
+
+  /* WORD CLOUD */
+  .wc-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .wc-tag {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-family: 'Nanum Round Square', sans-serif;
+    font-weight: 700;
+    cursor: default;
+    transition: transform 0.2s;
+  }
+  .wc-tag:hover { transform: scale(1.05); }
+  .wc-xl { font-size: 18px; background: var(--blue); color: white; }
+  .wc-lg { font-size: 15px; background: var(--blue-pale); color: var(--blue-deep); }
+  .wc-md { font-size: 13px; background: var(--gray-50); color: var(--gray-700); border: 1px solid var(--gray-100); }
+  .wc-sm { font-size: 12px; background: var(--gray-50); color: var(--gray-500); border: 1px solid var(--gray-100); }
+
+  /* TIMELINE */
+  .timeline-section { margin-top: 4px; }
+  .tl-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-700);
+    margin-bottom: 12px;
+  }
+  .tl-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+    height: 70px;
+  }
+  .tl-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    height: 100%;
+    justify-content: flex-end;
+  }
+  .tl-bar {
+    width: 100%;
+    border-radius: 4px 4px 0 0;
+    background: var(--blue-pale);
+    border: 1px solid var(--gray-100);
+    transition: height 0.6s ease;
+  }
+  .tl-bar.peak { background: var(--blue); border-color: var(--blue); }
+  .tl-lbl { font-size: 10px; color: var(--gray-500); }
+  .tl-note {
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--gray-500);
+    line-height: 1.6;
+  }
+  .tl-note strong { color: var(--blue); }
+
+</style>
+</head>
+<body>
+
+<div class="bg-decor">
+  <div class="bubble bubble-1"></div>
+  <div class="bubble bubble-2"></div>
+  <div class="bubble bubble-3"></div>
+</div>
+
+<!-- ══════════════════════════════
+     SCREEN 1 — 입력
+══════════════════════════════ -->
+<div id="screen1" class="screen active">
+  <nav class="top-nav">
+    <span class="nav-logo">도라에몽에게 물어봐</span>
+    <button class="nav-link" onclick="goTo('screen3')">모두의 고민 보기</button>
+  </nav>
+  <div class="container">
+    <div class="hero">
+      <div class="doraemon-face">
+        <svg viewBox="0 0 110 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- body/head -->
+          <circle cx="55" cy="55" r="50" fill="#1A8FE3"/>
+          <!-- face white -->
+          <ellipse cx="55" cy="62" rx="34" ry="30" fill="white"/>
+          <!-- eyes -->
+          <circle cx="44" cy="42" r="10" fill="white"/>
+          <circle cx="66" cy="42" r="10" fill="white"/>
+          <circle cx="46" cy="43" r="6" fill="#1A2336"/>
+          <circle cx="68" cy="43" r="6" fill="#1A2336"/>
+          <circle cx="48" cy="41" r="2" fill="white"/>
+          <circle cx="70" cy="41" r="2" fill="white"/>
+          <!-- nose -->
+          <circle cx="55" cy="56" r="6" fill="#E8322A"/>
+          <!-- whiskers -->
+          <line x1="20" y1="60" x2="46" y2="64" stroke="#1A2336" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="20" y1="68" x2="46" y2="68" stroke="#1A2336" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="64" y1="64" x2="90" y2="60" stroke="#1A2336" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="64" y1="68" x2="90" y2="68" stroke="#1A2336" stroke-width="1.5" stroke-linecap="round"/>
+          <!-- mouth -->
+          <path d="M42 76 Q55 88 68 76" stroke="#1A2336" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <!-- collar -->
+          <rect x="30" y="100" width="50" height="6" rx="3" fill="#E8322A"/>
+          <circle cx="55" cy="103" r="4" fill="#F5C518"/>
+        </svg>
+      </div>
+      <h1 class="hero-title">도라에몽에게<br><span>물어봐</span></h1>
+      <p class="hero-subtitle">어떤 고민이든 괜찮아요<br>도라에몽에게 말하듯 편하게 적어보세요</p>
+    </div>
+
+    <div class="counter-badge">
+      <span class="counter-dot"></span>
+      오늘 <strong style="color:var(--blue);margin:0 2px;">2,847명</strong>이 도라에몽에게 물어봤어요
+    </div>
+
+    <div class="card">
+      <div class="card-label">나의 고민</div>
+      <textarea class="input-area" id="problemInput" placeholder="예: 시험이 너무 걱정돼요. 열심히 공부했는데도 자꾸 불안해져서..."></textarea>
+      <button class="btn-primary" onclick="goToLoading()">🔵 도라에몽에게 물어보기</button>
+      <button class="btn-ghost" onclick="goTo('screen3')">다른 사람들의 고민 보기 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     SCREEN LOADING
+══════════════════════════════ -->
+<div id="screenLoading" class="screen">
+  <div class="container">
+    <div class="loading-face">
+      <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="40" cy="40" r="36" fill="#1A8FE3"/>
+        <ellipse cx="40" cy="46" rx="24" ry="22" fill="white"/>
+        <circle cx="31" cy="31" r="7" fill="white"/>
+        <circle cx="49" cy="31" r="7" fill="white"/>
+        <circle cx="32" cy="32" r="4" fill="#1A2336"/>
+        <circle cx="50" cy="32" r="4" fill="#1A2336"/>
+        <circle cx="33" cy="31" r="1.5" fill="white"/>
+        <circle cx="51" cy="31" r="1.5" fill="white"/>
+        <circle cx="40" cy="42" r="4" fill="#E8322A"/>
+        <path d="M30 56 Q40 64 50 56" stroke="#1A2336" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="loading-dots">
+      <div class="ld"></div><div class="ld"></div><div class="ld"></div>
+    </div>
+    <p class="loading-text">도라에몽이 주머니를<br>열심히 뒤지고 있어요...</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     SCREEN 2 — 결과
+══════════════════════════════ -->
+<div id="screen2" class="screen">
+  <nav class="top-nav">
+    <button class="btn-back" onclick="goTo('screen1')">← 다시 물어보기</button>
+  </nav>
+  <div class="container">
+    <div class="gadget-hero">
+      <span class="gadget-emoji">📚</span>
+      <div class="gadget-name">암기빵</div>
+      <div class="gadget-desc">먹으면 책의 내용이 머릿속에 쏙쏙 들어오는 마법의 빵 — 시험 걱정 끝!</div>
+      <span class="gadget-tag">학업</span>
+    </div>
+
+    <div class="card">
+      <div class="reason-block">
+        <div class="reason-label">이 비밀도구가 필요한 이유</div>
+        <div class="reason-text">지식은 있는데 불안감이 앞서는 상황이에요. 암기빵이 있다면 그 확신을 얻을 수 있겠죠. 당신이 느끼는 불안은 아주 자연스러운 감정이에요.</div>
+      </div>
+
+      <div class="quote-block">
+        <p class="quote-text">아쉽게도 암기빵은 아직 발명되지 않았습니다. 하지만 당신에게는 당신이 있습니다 — 그것으로 충분합니다.</p>
+      </div>
+
+      <button class="btn-ghost" style="margin-top:0;" onclick="goTo('screen3')">나와 같은 고민을 한 사람들 보기 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     SCREEN 3 — 대시보드
+══════════════════════════════ -->
+<div id="screen3" class="screen">
+  <nav class="top-nav">
+    <button class="btn-back" onclick="goTo('screen1')">← 처음으로</button>
+    <span class="nav-logo">모두의 고민</span>
+  </nav>
+  <div class="container">
+    <div class="insight-bar">
+      <span class="insight-icon">🌐</span>
+      <span class="insight-text">오늘 <span class="insight-num">2,847명</span>이 고민을 나눴어요</span>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab(this,'tab1')">고민 분포</button>
+      <button class="tab-btn" onclick="switchTab(this,'tab2')">비밀도구 순위</button>
+      <button class="tab-btn" onclick="switchTab(this,'tab3')">키워드</button>
+    </div>
+
+    <!-- TAB 1 -->
+    <div id="tab1" class="tab-panel active">
+      <div class="card">
+        <div class="section-title">어떤 고민이 가장 많을까요?</div>
+        <div class="bar-row">
+          <span class="bar-cat">학업</span>
+          <div class="bar-track"><div class="bar-fill" style="width:78%"></div></div>
+          <span class="bar-pct">781명</span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-cat">인간관계</span>
+          <div class="bar-track"><div class="bar-fill" style="width:62%"></div></div>
+          <span class="bar-pct">623명</span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-cat">자기 자신</span>
+          <div class="bar-track"><div class="bar-fill" style="width:45%"></div></div>
+          <span class="bar-pct">451명</span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-cat">가족</span>
+          <div class="bar-track"><div class="bar-fill" style="width:30%"></div></div>
+          <span class="bar-pct">302명</span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-cat">미래</span>
+          <div class="bar-track"><div class="bar-fill" style="width:22%"></div></div>
+          <span class="bar-pct">220명</span>
+        </div>
+        <div class="chart-insight">
+          📖 학업 고민이 가장 많아요. 당신만 그런 게 아니에요.
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2 -->
+    <div id="tab2" class="tab-panel">
+      <div class="card">
+        <div class="section-title">가장 많이 소환된 비밀도구</div>
+        <div class="rank-item">
+          <span class="rank-num top">1</span>
+          <span class="rank-emoji">📚</span>
+          <div class="rank-info">
+            <div class="rank-name">암기빵</div>
+            <div class="rank-bar-wrap">
+              <div class="rank-track"><div class="rank-bar-fill" style="width:100%"></div></div>
+              <span class="rank-count">534명</span>
+            </div>
+          </div>
+        </div>
+        <div class="rank-item">
+          <span class="rank-num">2</span>
+          <span class="rank-emoji">🚪</span>
+          <div class="rank-info">
+            <div class="rank-name">어디로든 문</div>
+            <div class="rank-bar-wrap">
+              <div class="rank-track"><div class="rank-bar-fill" style="width:78%"></div></div>
+              <span class="rank-count">417명</span>
+            </div>
+          </div>
+        </div>
+        <div class="rank-item">
+          <span class="rank-num">3</span>
+          <span class="rank-emoji">⏰</span>
+          <div class="rank-info">
+            <div class="rank-name">타임머신</div>
+            <div class="rank-bar-wrap">
+              <div class="rank-track"><div class="rank-bar-fill" style="width:60%"></div></div>
+              <span class="rank-count">321명</span>
+            </div>
+          </div>
+        </div>
+        <div class="rank-item">
+          <span class="rank-num">4</span>
+          <span class="rank-emoji">🔮</span>
+          <div class="rank-info">
+            <div class="rank-name">소형화 빛</div>
+            <div class="rank-bar-wrap">
+              <div class="rank-track"><div class="rank-bar-fill" style="width:42%"></div></div>
+              <span class="rank-count">225명</span>
+            </div>
+          </div>
+        </div>
+        <div class="rank-item">
+          <span class="rank-num">5</span>
+          <span class="rank-emoji">🌀</span>
+          <div class="rank-info">
+            <div class="rank-name">투명망토</div>
+            <div class="rank-bar-wrap">
+              <div class="rank-track"><div class="rank-bar-fill" style="width:28%"></div></div>
+              <span class="rank-count">149명</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3 -->
+    <div id="tab3" class="tab-panel">
+      <div class="card">
+        <div class="section-title">사람들이 자주 쓴 키워드</div>
+        <div class="wc-wrap">
+          <span class="wc-tag wc-xl">시험</span>
+          <span class="wc-tag wc-xl">불안</span>
+          <span class="wc-tag wc-lg">미래</span>
+          <span class="wc-tag wc-lg">피곤함</span>
+          <span class="wc-tag wc-lg">친구</span>
+          <span class="wc-tag wc-md">공부</span>
+          <span class="wc-tag wc-md">걱정</span>
+          <span class="wc-tag wc-md">외로움</span>
+          <span class="wc-tag wc-sm">자신감</span>
+          <span class="wc-tag wc-sm">취업</span>
+          <span class="wc-tag wc-sm">가족</span>
+          <span class="wc-tag wc-sm">관계</span>
+          <span class="wc-tag wc-sm">실수</span>
+          <span class="wc-tag wc-sm">압박</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="timeline-section">
+          <div class="tl-title">⏱ 언제 가장 많이 고민할까요?</div>
+          <div class="tl-chart">
+            <div class="tl-col"><div class="tl-bar" style="height:20px"></div><span class="tl-lbl">낮</span></div>
+            <div class="tl-col"><div class="tl-bar" style="height:30px"></div><span class="tl-lbl">오후</span></div>
+            <div class="tl-col"><div class="tl-bar" style="height:40px"></div><span class="tl-lbl">저녁</span></div>
+            <div class="tl-col"><div class="tl-bar peak" style="height:58px"></div><span class="tl-lbl">밤</span></div>
+            <div class="tl-col"><div class="tl-bar peak" style="height:48px"></div><span class="tl-lbl">새벽</span></div>
+            <div class="tl-col"><div class="tl-bar" style="height:14px"></div><span class="tl-lbl">아침</span></div>
+          </div>
+          <p class="tl-note"><strong>밤과 새벽</strong>에 가장 많은 고민이 올라와요. 혼자 뒤척이는 그 시간, 당신만이 아니에요.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  function goTo(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo(0, 0);
+  }
+
+  function goToLoading() {
+    const val = document.getElementById('problemInput').value.trim();
+    if (!val) {
+      document.getElementById('problemInput').focus();
+      document.getElementById('problemInput').style.borderColor = '#E8322A';
+      setTimeout(() => document.getElementById('problemInput').style.borderColor = '', 1500);
+      return;
+    }
+    goTo('screenLoading');
+    setTimeout(() => goTo('screen2'), 2200);
+  }
+
+  function switchTab(btn, tabId) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById(tabId).classList.add('active');
+  }
+</script>
+</body>
+</html>
